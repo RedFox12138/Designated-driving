@@ -2,8 +2,10 @@ package com.atguigu.daijia.customer.controller;
 
 import com.atguigu.daijia.common.constant.RedisConstant;
 import com.atguigu.daijia.common.execption.GuiguException;
+import com.atguigu.daijia.common.login.GuiguLogin;
 import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.result.ResultCodeEnum;
+import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.customer.client.CustomerInfoFeignClient;
 import com.atguigu.daijia.customer.service.CustomerService;
 import com.atguigu.daijia.model.vo.customer.CustomerLoginVo;
@@ -20,12 +22,10 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "客户API接口管理")
 @RestController
 @RequestMapping("/customer")
-@SuppressWarnings({"unchecked", "rawtypes"})
+
 public class CustomerController {
     @Autowired
     private CustomerService customerInfoService;
-
-
 
     @Operation(summary = "小程序授权登录")
     @GetMapping("/login/{code}")
@@ -34,15 +34,27 @@ public class CustomerController {
     }
 
     @Operation(summary = "获取客户登录信息")
+    @GuiguLogin
     @GetMapping("/getCustomerLoginInfo")
-    public Result<CustomerLoginVo> getCustomerLoginInfo(@RequestHeader(value = "token")String token){
-        //1 从请求头获取token字符串
+    public Result<CustomerLoginVo> getCustomerLoginInfo(){
+        //1 从ThreadLoacl获取token字符串
+        Long customerId = AuthContextHolder.getUserId();
         //这一步已经在注解里实现了
-        CustomerLoginVo customerLoginVo = customerInfoService.getCustomerLoginInfo(token);
-
-
+        CustomerLoginVo customerLoginVo = customerInfoService.getCustomerInfo(customerId);
         return Result.ok(customerLoginVo);
     }
+
+//    @Operation(summary = "获取客户登录信息")
+//    @GuiguLogin
+//    @GetMapping("/getCustomerLoginInfo")
+//    public Result<CustomerLoginVo> getCustomerLoginInfo(@RequestHeader(value = "token")String token){
+//        //1 从请求头获取token字符串
+//        //这一步已经在注解里实现了
+//        CustomerLoginVo customerLoginVo = customerInfoService.getCustomerLoginInfo(token);
+//
+//
+//        return Result.ok(customerLoginVo);
+//    }
 
 }
 

@@ -15,6 +15,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(value = "service-driver")
 public interface DriverInfoFeignClient {
+    /**
+     * 小程序授权登录
+     * @param code
+     * @return
+     */
+    @GetMapping("/driver/info/login/{code}")
+    Result<Long> login(@PathVariable("code") String code);
 
+    @GetMapping("/driver/info/getDriverLoginInfo/{driverId}")
+    Result<DriverLoginVo> getDriverLoginInfo(@PathVariable("driverId") Long driverId);
 
+    /**
+     * 获取司机认证信息
+     * @param driverId
+     * @return
+     */
+    @GetMapping("/driver/info/getDriverAuthInfo/{driverId}")
+    Result<DriverAuthInfoVo> getDriverAuthInfo(@PathVariable("driverId") Long driverId);
+
+    /**
+     * 更新司机认证信息
+     * @param updateDriverAuthInfoForm
+     * @return
+     */
+    @PostMapping("/driver/info/updateDriverAuthInfo")
+    Result<Boolean> UpdateDriverAuthInfo(@RequestBody UpdateDriverAuthInfoForm updateDriverAuthInfoForm);
+
+    @PostMapping("/driver/info/creatDriverFaceModel")
+    Result<Boolean> creatDriverFaceModel(@RequestBody DriverFaceModelForm driverFaceModelForm);
 }
