@@ -5,9 +5,15 @@ import com.atguigu.daijia.common.result.Result;
 import com.atguigu.daijia.common.util.AuthContextHolder;
 import com.atguigu.daijia.driver.service.OcrService;
 import com.atguigu.daijia.driver.service.OrderService;
+import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
+import com.atguigu.daijia.model.form.order.OrderFeeForm;
+import com.atguigu.daijia.model.form.order.StartDriveForm;
+import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
 import com.atguigu.daijia.model.vo.driver.IdCardOcrVo;
+import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
+import com.atguigu.daijia.model.vo.order.OrderInfoVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -39,14 +45,68 @@ public class OrderController {
         return Result.ok(orderService.findNewOrderQueueData(driverId));
     }
 
-    @Operation(summary = "查找司机端当前订单")
+    @Operation(summary = "司机抢单")
+    @GuiguLogin
+    @GetMapping("/robNewOrder/{orderId}")
+    public Result<Boolean> robNewOrder(@PathVariable Long orderId) {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.robNewOrder(driverId, orderId));
+    }
+    @Operation(summary = "司机端查找当前订单")
     @GuiguLogin
     @GetMapping("/searchDriverCurrentOrder")
     public Result<CurrentOrderInfoVo> searchDriverCurrentOrder() {
-        CurrentOrderInfoVo currentOrderInfoVo = new CurrentOrderInfoVo();
-        //TODO 后续再进行完善
-        currentOrderInfoVo.setIsHasCurrentOrder(false);
-        return Result.ok(currentOrderInfoVo);
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.searchDriverCurrentOrder(driverId));
+    }
+    @Operation(summary = "获取订单账单详细信息")
+    @GuiguLogin
+    @GetMapping("/getOrderInfo/{orderId}")
+    public Result<OrderInfoVo> getOrderInfo(@PathVariable Long orderId) {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.getOrderInfo(orderId, driverId));
+    }
+
+    @Operation(summary = "计算最佳驾驶线路")
+    @GuiguLogin
+    @PostMapping("/calculateDrivingLine")
+    public Result<DrivingLineVo> calculateDrivingLine(@RequestBody CalculateDrivingLineForm calculateDrivingLineForm) {
+        return Result.ok(orderService.calculateDrivingLine(calculateDrivingLineForm));
+    }
+
+    @Operation(summary = "司机到达代驾起始地点")
+    @GuiguLogin
+    @GetMapping("/driverArriveStartLocation/{orderId}")
+    public Result<Boolean> driverArriveStartLocation(@PathVariable Long orderId) {
+        Long driverId = AuthContextHolder.getUserId();
+        return Result.ok(orderService.driverArriveStartLocation(orderId, driverId));
+    }
+
+    @Operation(summary = "更新代驾车辆信息")
+    @GuiguLogin
+    @PostMapping("/updateOrderCart")
+    public Result<Boolean> updateOrderCart(@RequestBody UpdateOrderCartForm updateOrderCartForm) {
+        Long driverId = AuthContextHolder.getUserId();
+        updateOrderCartForm.setDriverId(driverId);
+        return Result.ok(orderService.updateOrderCart(updateOrderCartForm));
+    }
+
+    @Operation(summary = "开始代驾服务")
+    @GuiguLogin
+    @PostMapping("/startDrive")
+    public Result<Boolean> startDrive(@RequestBody StartDriveForm startDriveForm) {
+        Long driverId = AuthContextHolder.getUserId();
+        startDriveForm.setDriverId(driverId);
+        return Result.ok(orderService.startDrive(startDriveForm));
+    }
+
+    @Operation(summary = "结束代驾服务更新订单账单")
+    @GuiguLogin
+    @PostMapping("/endDrive")
+    public Result<Boolean> endDrive(@RequestBody OrderFeeForm orderFeeForm) {
+        Long driverId = AuthContextHolder.getUserId();
+        orderFeeForm.setDriverId(driverId);
+        return Result.ok(orderService.endDrive(orderFeeForm));
     }
 }
 

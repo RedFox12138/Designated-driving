@@ -13,6 +13,7 @@ import com.atguigu.daijia.model.entity.driver.*;
 import com.atguigu.daijia.model.form.driver.DriverFaceModelForm;
 import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
+import com.atguigu.daijia.model.vo.driver.DriverInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -276,6 +277,23 @@ public class DriverInfoServiceImpl extends ServiceImpl<DriverInfoMapper, DriverI
         driverSet.setServiceStatus(status);
         driverSetMapper.update(driverSet,wrapper);
         return true;
+    }
+    //司乘同显，获取司机的基本信息
+    @Override
+    public DriverInfoVo getDriverInfoOrder(Long driverId) {
+        //根据司机ID获取基本信息
+        DriverInfo driverInfo = driverInfoMapper.selectById(driverId);
+        //封装Vo
+        DriverInfoVo driverInfoVo =new DriverInfoVo();
+        BeanUtils.copyProperties(driverInfo,driverInfoVo);
+        //计算驾龄
+        //获取当前年
+        int currentyear = new DateTime().getYear();
+        //获取领取驾照的日期
+        int firstyear = new DateTime(driverInfo.getDriverLicenseIssueDate()).getYear();
+        int driverlicenseAge = firstyear - currentyear;
+        driverInfoVo.setDriverLicenseAge(driverlicenseAge);
+        return driverInfoVo;
     }
 
     //人脸静态活体检测
