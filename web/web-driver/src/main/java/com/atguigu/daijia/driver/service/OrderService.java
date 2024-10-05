@@ -4,6 +4,7 @@ import com.atguigu.daijia.model.form.map.CalculateDrivingLineForm;
 import com.atguigu.daijia.model.form.order.OrderFeeForm;
 import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
+import com.atguigu.daijia.model.vo.base.PageVo;
 import com.atguigu.daijia.model.vo.map.DrivingLineVo;
 import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
 import com.atguigu.daijia.model.vo.order.NewOrderDataVo;
@@ -33,4 +34,8 @@ public interface OrderService {
     Boolean startDrive(StartDriveForm startDriveForm);
 
     Boolean endDrive(OrderFeeForm orderFeeForm);
+
+    PageVo findDriverOrderPage(Long driverId, Long page, Long limit);
+
+    Boolean sendOrderBillInfo(Long orderId, Long driverId);
 }

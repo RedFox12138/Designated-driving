@@ -59,7 +59,7 @@ public class MapServiceImpl implements MapService {
         drivingLineVo.setDuration(route.getBigDecimal("duration"));
         //距离
         drivingLineVo.setDistance(route.getBigDecimal("distance")
-                .divideToIntegralValue(new BigDecimal(1000))
+                .divide(new BigDecimal(1000))
                 .setScale(2, RoundingMode.HALF_UP));//保留小数点后两位，四舍五入
         //路线
         drivingLineVo.setPolyline(route.getJSONArray("polyline"));

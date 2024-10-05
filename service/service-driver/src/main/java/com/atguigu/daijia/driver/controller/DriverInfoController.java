@@ -10,6 +10,7 @@ import com.atguigu.daijia.model.form.driver.UpdateDriverAuthInfoForm;
 import com.atguigu.daijia.model.vo.driver.DriverAuthInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverInfoVo;
 import com.atguigu.daijia.model.vo.driver.DriverLoginVo;
+import com.atguigu.daijia.model.vo.order.OrderPayVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +93,13 @@ public class DriverInfoController {
     public Result<DriverInfoVo> getDriverInfoOrder(@PathVariable Long driverId) {
         return Result.ok(driverInfoService.getDriverInfoOrder(driverId));
     }
+
+    @Operation(summary = "获取司机OpenId")
+    @GetMapping("/getDriverOpenId/{driverId}")
+    public Result<String> getDriverOpenId(@PathVariable Long driverId) {
+        return Result.ok(driverInfoService.getDriverOpenId(driverId));
+    }
+
 
 }
 

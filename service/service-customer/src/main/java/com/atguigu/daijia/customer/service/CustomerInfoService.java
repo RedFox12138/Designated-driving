@@ -9,4 +9,6 @@ public interface CustomerInfoService extends IService<CustomerInfo> {
     Long login(String code);
 
     CustomerLoginVo getCustomerLoginInfo(Long customerId);
+
+    String getCustomerOpenId(Long customerId);
 }

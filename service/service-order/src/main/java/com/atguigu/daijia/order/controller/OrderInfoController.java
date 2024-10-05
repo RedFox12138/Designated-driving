@@ -6,9 +6,13 @@ import com.atguigu.daijia.model.form.order.OrderInfoForm;
 import com.atguigu.daijia.model.form.order.StartDriveForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderBillForm;
 import com.atguigu.daijia.model.form.order.UpdateOrderCartForm;
-import com.atguigu.daijia.model.vo.order.CurrentOrderInfoVo;
+import com.atguigu.daijia.model.vo.base.PageVo;
+import com.atguigu.daijia.model.vo.order.*;
 import com.atguigu.daijia.order.service.OrderInfoService;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -85,6 +89,71 @@ public class OrderInfoController {
     @PostMapping("/endDrive")
     public Result<Boolean> endDrive(@RequestBody UpdateOrderBillForm updateOrderBillForm) {
         return Result.ok(orderInfoService.endDrive(updateOrderBillForm));
+    }
+    @Operation(summary = "获取乘客订单分页列表")
+    @GetMapping("/findCustomerOrderPage/{customerId}/{page}/{limit}")
+    public Result<PageVo> findCustomerOrderPage(@PathVariable Long customerId,
+                                                @PathVariable Long page,
+                                                @PathVariable Long limit) {
+        Page<OrderInfo> pageParam = new Page<>(page,limit);
+        PageVo pageVo  = orderInfoService.findCustomerOrderPage(pageParam,customerId);
+        pageVo.setPage(page);
+        pageVo.setLimit(limit);
+        return Result.ok(pageVo);
+    }
+
+    @Operation(summary = "获取司机订单分页列表")
+    @GetMapping("/findDriverOrderPage/{driverId}/{page}/{limit}")
+    public Result<PageVo> findDriverOrderPage(
+            @Parameter(name = "driverId", description = "司机id", required = true)
+            @PathVariable Long driverId,
+
+            @Parameter(name = "page", description = "当前页码", required = true)
+            @PathVariable Long page,
+
+            @Parameter(name = "limit", description = "每页记录数", required = true)
+            @PathVariable Long limit) {
+        Page<OrderInfo> pageParam = new Page<>(page, limit);
+        PageVo pageVo = orderInfoService.findDriverOrderPage(pageParam, driverId);
+        pageVo.setPage(page);
+        pageVo.setLimit(limit);
+        return Result.ok(pageVo);
+    }
+
+    @Operation(summary = "根据订单id获取实际账单信息")
+    @GetMapping("/getOrderBillInfo/{orderId}")
+    public Result<OrderBillVo> getOrderBillInfo(@PathVariable Long orderId) {
+        return Result.ok(orderInfoService.getOrderBillInfo(orderId));
+    }
+
+    @Operation(summary = "根据订单id获取实际分账信息")
+    @GetMapping("/getOrderProfitsharing/{orderId}")
+    public Result<OrderProfitsharingVo> getOrderProfitsharing(@PathVariable Long orderId) {
+        return Result.ok(orderInfoService.getOrderProfitsharing(orderId));
+    }
+
+    @Operation(summary = "发送账单信息")
+    @GetMapping("/sendOrderBillInfo/{orderId}/{driverId}")
+    Result<Boolean> sendOrderBillInfo(@PathVariable Long orderId, @PathVariable Long driverId) {
+        return Result.ok(orderInfoService.sendOrderBillInfo(orderId, driverId));
+    }
+
+    @Operation(summary = "获取订单支付信息")
+    @GetMapping("/getOrderPayVo/{orderNo}/{customerId}")
+    public Result<OrderPayVo> getOrderPayVo(@PathVariable String orderNo, @PathVariable Long customerId) {
+        return Result.ok(orderInfoService.getOrderPayVo(orderNo, customerId));
+    }
+
+    @Operation(summary = "更改订单支付状态")
+    @GetMapping("/updateOrderPayStatus/{orderNo}")
+    public Result<Boolean> updateOrderPayStatus(@PathVariable String orderNo) {
+        return Result.ok(orderInfoService.updateOrderPayStatus(orderNo));
+    }
+
+    @Operation(summary = "获取订单的系统奖励")
+    @GetMapping("/getOrderRewardFee/{orderNo}")
+    public Result<OrderRewardVo> getOrderRewardFee(@PathVariable String orderNo) {
+        return Result.ok(orderInfoService.getOrderRewardFee(orderNo));
     }
 }
 
